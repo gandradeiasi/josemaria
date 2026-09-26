@@ -1,0 +1,558 @@
+/* Interface branca, minimalista, pensada para o celular (mobile first).
+   Sem imagens ou fontes externas: funciona offline. */
+
+:root {
+  --preto: #16181c;
+  --cinza: #5f6672;
+  --fraco: #8b93a0;
+  --linha: #e7e9ee;
+  --linha-forte: #d8dbe2;
+  --fundo: #f6f7f9;
+  --realce: #fde68a;
+  --destaque: #1f2937;
+  --largura: 40rem;
+  --pe: 4.25rem; /* altura da barra de navegação inferior */
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html {
+  background: #fff;
+  /* Reserva a barra de rolagem sempre. Sem isso, abrir o diálogo (que a
+     remove) muda a largura da página, o texto requebra e tudo se desloca. */
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  color: var(--preto);
+  background: #fff;
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  /* espaço para a barra fixa no rodapé */
+  padding-bottom: calc(var(--pe) + env(safe-area-inset-bottom));
+  overscroll-behavior-y: contain;
+}
+
+a { color: var(--destaque); }
+
+svg {
+  width: 1.25em;
+  height: 1.25em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+/* ------------------------------ topo ------------------------------------ */
+
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--linha);
+  padding-top: env(safe-area-inset-top);
+}
+
+/* O desfoque fica num pseudo-elemento de propósito: se estivesse no .topo,
+   ele viraria bloco de contenção e a barra de baixo (que é filha dele e usa
+   position: fixed) pararia de grudar na tela. */
+.topo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: var(--largura);
+  margin: 0 auto;
+  padding: 8px 12px;
+}
+
+.campo { position: relative; flex: 1; min-width: 0; }
+
+/* lupa desenhada por CSS, sem arquivo de imagem */
+.campo::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  width: 1.05em;
+  height: 1.05em;
+  transform: translateY(-50%);
+  color: var(--fraco);
+  pointer-events: none;
+  background: currentColor;
+  -webkit-mask: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4.5-4.5'/%3E%3C/svg%3E");
+  mask: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4.5-4.5'/%3E%3C/svg%3E");
+}
+
+#q {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 2.75rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--preto);
+  background: var(--fundo);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  outline: none;
+  appearance: none;
+}
+#q::placeholder { color: var(--fraco); }
+#q:focus {
+  background: #fff;
+  border-color: var(--linha-forte);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+#q:disabled { opacity: 0.5; }
+#q::-webkit-search-cancel-button { cursor: pointer; }
+
+.btn-icone {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  color: var(--cinza);
+  background: var(--fundo);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.btn-icone:active { background: var(--linha); }
+.btn-icone[aria-expanded="true"] { color: #fff; background: var(--destaque); }
+
+/* ------------------------------ filtros --------------------------------- */
+
+/* No celular o painel é sobreposto ao conteúdo (absolute), em vez de entrar
+   no fluxo: assim abrir e fechar não empurra a lista, evitando layout shift. */
+.filtros {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 25;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+  background: #fff;
+  border-bottom: 1px solid var(--linha);
+  box-shadow: 0 8px 16px -12px rgba(0, 0, 0, 0.25);
+}
+.filtros[hidden] { display: none; }
+
+/* uma única linha: obra e capítulo */
+.campo-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.campo-bloco { display: grid; gap: 4px; min-width: 0; }
+.campo-bloco > span {
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fraco);
+  padding-left: 2px;
+}
+
+.campo-bloco select,
+.campo-bloco input {
+  width: 100%;
+  min-width: 0;
+  height: 2.5rem;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--preto);
+  background: #fff;
+  border: 1px solid var(--linha-forte);
+  border-radius: 9px;
+  outline: none;
+}
+.campo-bloco select {
+  appearance: none;
+  padding-right: 1.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6672' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 1rem;
+}
+.campo-bloco select:focus,
+.campo-bloco input:focus { border-color: var(--fraco); }
+
+/* ------------------------------ lista ----------------------------------- */
+
+main {
+  max-width: var(--largura);
+  margin: 0 auto;
+  padding: 14px 12px 8px;
+}
+
+/* Altura fixa e uma linha só: o texto muda a cada busca, e se quebrasse
+   para duas linhas empurraria a lista inteira (layout shift). */
+.resumo {
+  margin: 0 0 10px;
+  padding: 0 4px;
+  min-height: 1.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.5rem;
+  color: var(--fraco);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lista { list-style: none; margin: 0; padding: 0; }
+
+.item {
+  display: block;
+  width: 100%;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--linha);
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.item:last-child { border-bottom: 0; }
+.item:active { background: var(--fundo); }
+.item:focus-visible { outline: 2px solid var(--destaque); outline-offset: -2px; border-radius: 6px; }
+
+.item-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  color: var(--fraco);
+}
+.item-n {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--preto);
+  font-variant-numeric: tabular-nums;
+}
+.item-livro { color: var(--cinza); }
+/* espaço sempre reservado: some só a cor, nunca a caixa (evita layout shift) */
+.item-salvo {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--fundo);
+  color: var(--fraco);
+}
+.item-salvo.invisivel { visibility: hidden; }
+
+.item-texto { margin: 0; }
+.item-texto p { margin: 0; }
+.item-texto i { font-style: italic; }
+.item-texto sup { font-size: 0.75em; }
+
+mark {
+  background: var(--realce);
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+.vazio {
+  margin: 0;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--fraco);
+  font-size: 0.9375rem;
+}
+
+/* ---------------- navegação: fixa embaixo no celular --------------------- */
+/* No desktop ela é reposicionada para dentro do cabeçalho (ver @media). */
+
+.abas {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-top: 1px solid var(--linha);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.abas button {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: var(--pe);
+  padding: 6px 4px;
+  font: inherit;
+  font-size: 0.6875rem;
+  color: var(--fraco);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.abas button svg { width: 1.375rem; height: 1.375rem; }
+.abas button.ativo { color: var(--destaque); font-weight: 600; }
+.abas button:active { background: var(--fundo); }
+/* sem pontos no escopo (ex.: busca sem resultado): o botão esmaece */
+.abas button.vazio { opacity: 0.4; }
+
+.conta {
+  display: inline-block;
+  min-width: 1.1em;
+  margin-left: 3px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--linha);
+  color: var(--cinza);
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-align: center;
+}
+.abas button.ativo .conta { background: var(--destaque); color: #fff; }
+
+/* ------------------------- diálogo de leitura --------------------------- */
+
+dialog {
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 16px 16px 0 0;
+  color: var(--preto);
+  background: #fff;
+  /* Sem isto, o display:flex de baixo apareceria mesmo com o diálogo fechado.
+     O navegador esconde <dialog> sem [open]; é preciso respeitar isso. */
+  display: none;
+  overflow: hidden;
+}
+
+/* coluna flex: cabeça e rodapé não mudam de lugar, só o corpo rola */
+dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+dialog::backdrop { background: rgba(15, 18, 22, 0.35); }
+dialog[open] { animation: subir 0.22s ease-out; }
+@keyframes subir {
+  from { transform: translateY(4%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } }
+
+.dlg-cabeca {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px 8px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--linha);
+  border-radius: 16px 16px 0 0;
+}
+/* alça: indica que a folha sobe de baixo */
+.dlg-cabeca::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2.25rem;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--linha-forte);
+}
+.dlg-info { flex: 1; min-width: 0; }
+.dlg-titulo {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--fraco);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dlg-corpo {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 20px 18px 24px;
+  font-size: 1.0625rem;
+  line-height: 1.68;
+}
+.dlg-corpo p { margin: 0 0 1em; }
+.dlg-corpo p:last-child { margin-bottom: 0; }
+.dlg-corpo h2 {
+  margin: 0 0 1em;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.dlg-corpo sup { font-size: 0.75em; }
+
+/* minmax(0, 1fr) trava a largura: com 1fr puro, um rótulo mais longo
+   esticaria a coluna e os botões ficariam de tamanhos diferentes. */
+.dlg-pe {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1px solid var(--linha);
+}
+
+.dlg-pe button {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  min-height: 3rem;
+  padding: 6px 4px;
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--cinza);
+  background: var(--fundo);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.dlg-pe button svg { width: 1.125rem; height: 1.125rem; }
+.dlg-pe button:active { background: var(--linha); }
+
+/* Salvar: neutro quando ainda é uma ação, verde quando já está salvo.
+   Antes ficava cinza no estado salvo, o que parecia "desligado". */
+.dlg-pe .btn-pri {
+  color: var(--preto);
+  background: #fff;
+  border-color: var(--linha-forte);
+  font-weight: 600;
+}
+.dlg-pe .btn-pri:active { background: var(--fundo); }
+.dlg-pe .btn-pri.on {
+  color: #fff;
+  background: #15803d;
+  border-color: #15803d;
+}
+.dlg-pe .btn-pri.on:active { background: #166534; }
+.dlg-pe .ico-salvo { display: none; }
+.dlg-pe .btn-pri.on .ico-salvar { display: none; }
+.dlg-pe .btn-pri.on .ico-salvo { display: block; }
+
+/* --------------------------- telas maiores ------------------------------ */
+
+@media (min-width: 34rem) {
+  .barra, .filtros, main { padding-left: 20px; padding-right: 20px; }
+  .item { padding: 16px 6px; }
+}
+
+/* 40rem = 640px: a partir daí cabe busca, abas e filtros na mesma faixa */
+@media (min-width: 40rem) {
+  body { font-size: 17px; padding-bottom: 0; }
+
+  /* Mais largura no desktop: é o que permite busca, abas e filtros
+     caberem na mesma faixa, sem o conteúdo ficar espremido. */
+  :root { --largura: 68rem; }
+
+  /* No desktop o cabeçalho vira uma faixa só: busca, navegação e
+     filtros lado a lado, sempre visíveis, sem rolar a página. */
+  .topo {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    max-width: var(--largura);
+    margin: 0 auto;
+    padding: 14px 20px 12px;
+  }
+  /* a .barra e as .campo-linha deixam de ser caixas: só os campos contam */
+  .barra, .campo-linha { display: contents; }
+
+  /* busca ocupa a primeira linha; abas e filtros dividem a de baixo */
+  .campo { flex: 1 1 100%; max-width: none; }
+
+  /* navegação deixa de ser fixa e vira abas no cabeçalho */
+  .abas {
+    position: static;
+    order: 2;
+    gap: 2px;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-top: 0;
+  }
+  .abas button {
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 6px;
+    min-height: 2.25rem;
+    padding: 4px 12px;
+    font-size: 0.875rem;
+    border-radius: 999px;
+  }
+  .abas button svg { width: 1.125rem; height: 1.125rem; }
+  .abas button.ativo { background: var(--fundo); }
+
+  /* cabe tudo em tela larga: filtros sempre abertos, dividindo a linha
+     com a navegação. Sem flex-basis 100%, senão quebrariam de linha. */
+  .filtros {
+    position: static; /* volta ao fluxo: no desktop há espaço à toa */
+    order: 3;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+  .filtros[hidden] { display: flex; }
+  /* aqui os dropdowns ficam sempre visíveis, então o botão não tem função */
+  .btn-filtros { display: none; }
+  .campo-linha { display: flex; gap: 10px; }
+  .campo-bloco { display: block; min-width: 7rem; flex: 0 1 auto; }
+  .campo-bloco > span { display: block; padding: 0 0 3px 2px; }
+
+  /* diálogo volta a ser uma janela centralizada */
+  dialog {
+    inset: 0;
+    margin: auto;
+    width: min(34rem, calc(100vw - 3rem));
+    /* altura fixa, não max-height: se crescesse com o texto, o rodapé
+       subiria e desceria a cada ponto aberto */
+    height: min(85vh, 46rem);
+    border: 1px solid var(--linha);
+    border-radius: 14px;
+  }
+  .dlg-cabeca { border-radius: 0; padding: 10px 10px 10px 16px; }
+  .dlg-cabeca::before { display: none; }
+  .dlg-corpo { padding: 22px 20px; }
+  .dlg-pe { padding: 12px 16px; }
+}
+

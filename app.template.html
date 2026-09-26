@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pontos</title>
+<meta name="color-scheme" content="light">
+<meta name="description" content="Leitor offline dos pontos de Caminho, Sulco e Forja.">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="topo">
+  <div class="barra">
+    <div class="campo">
+      <input id="q" type="search" placeholder="Pesquisar" aria-label="Pesquisar nos pontos"
+             autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    </div>
+    <button id="btnFiltros" class="btn-icone btn-filtros" aria-label="Filtros" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+    </button>
+  </div>
+
+  <nav class="abas" id="abas" aria-label="Seções">
+    <button data-v="busca" class="ativo">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span>Pontos</span>
+    </button>
+    <button data-v="aleatorio" id="btnAleatorio">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.3"/><circle cx="15.5" cy="15.5" r="1.3"/><circle cx="15.5" cy="8.5" r="1.3"/><circle cx="8.5" cy="15.5" r="1.3"/></svg>
+      <span>Aleatório<span id="contAleatorio" class="conta"></span></span>
+    </button>
+    <button data-v="salvos">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z"/></svg>
+      <span>Salvos<span id="contSalvos" class="conta"></span></span>
+    </button>
+  </nav>
+
+  <div class="filtros" id="filtros" hidden>
+    <div class="campo-linha">
+      <label class="campo-bloco">
+        <span>Obra</span>
+        <select id="fObra"><option value="">Todas</option></select>
+      </label>
+      <label class="campo-bloco">
+        <span>Capítulo</span>
+        <select id="fCap"><option value="">Todos</option></select>
+      </label>
+    </div>
+  </div>
+</header>
+
+<main>
+  <p id="resumo" class="resumo"></p>
+  <ol id="lista" class="lista"></ol>
+  <p id="vazio" class="vazio" hidden></p>
+</main>
+
+<dialog id="dlg">
+  <div class="dlg-cabeca">
+    <div class="dlg-info">
+      <span id="dlgTitulo" class="dlg-titulo"></span>
+    </div>
+    <button id="dlgFechar" class="btn-icone" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <div id="dlgCorpo" class="dlg-corpo"></div>
+
+  <div class="dlg-pe">
+    <button id="dlgAnterior" class="btn-sec">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      <span>Anterior</span>
+    </button>
+    <button id="dlgSalvar" class="btn-pri" aria-pressed="false">
+      <svg class="ico-salvar" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z"/></svg>
+      <svg class="ico-salvo" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+      <span>Salvar</span>
+    </button>
+    <button id="dlgOutro" class="btn-sec">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.3"/><circle cx="15.5" cy="15.5" r="1.3"/><circle cx="15.5" cy="8.5" r="1.3"/><circle cx="8.5" cy="15.5" r="1.3"/></svg>
+      <span>Outro</span>
+    </button>
+    <button id="dlgProx" class="btn-sec">
+      <span>Próximo</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</dialog>
+
+<script>/*__DATA__*/</script>
+<script src="app.js"></script>
+</body>
+</html>
+
